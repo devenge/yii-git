@@ -9,6 +9,8 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\FeedbackForm;
+use app\models\Page;
 
 class SiteController extends Controller
 {
@@ -122,5 +124,15 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionMypage()
+    {
+        $model = new FeedbackForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            echo $model->name;
+        }
+        $pages = Page::find()->all();
+        return $this->render('mypage', ['model' => $model, 'pages' => $pages]);
     }
 }

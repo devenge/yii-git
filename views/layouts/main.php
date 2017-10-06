@@ -38,20 +38,6 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
         ],
     ]);
     NavBar::end();
@@ -62,18 +48,37 @@ AppAsset::register($this);
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= $content ?>
+
+        <div id="msg" class="msg"></div>
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
 
-        <p class="pull-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
 
 <?php $this->endBody() ?>
+<script>
+var msg = $("#msg");
+$("#generate-url").click(function(e){
+    e.preventDefault();
+
+    msg.css("display", "none");
+
+    var ajax = $.ajax({
+        type: 'POST',
+        url: '/',
+        data: $("#add-link").serialize()
+    });
+
+    ajax.done(function(data) {
+        msg.css("display", "block");
+        if (0 === Number(data.error)) {
+            msg.html("Ссылка сохранена по адресу " + location.href + "?url=" + data.short);
+        } else {
+            msg.html("Не удалось сохранить, скорее всего введена не ссылка или данная ссылка уже сохранена");
+        }
+    });
+});
+</script>
 </body>
 </html>
 <?php $this->endPage() ?>
